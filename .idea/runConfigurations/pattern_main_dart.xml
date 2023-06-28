@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="pattern_main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="filePath" value="$PROJECT_DIR$/lib/pattern_codelab/pattern_main.dart" />
+    <method v="2" />
+  </configuration>
+</component>
