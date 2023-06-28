@@ -1,30 +1,10 @@
 import 'dart:convert';
 
-class Document {
-  Document() : _json = jsonDecode(documentJson);
-  final Map<String, Object?> _json;
-
-  (String, {DateTime modified}) get metadata {
-    const title = 'My Document';
-    final now = DateTime.now();
-
-    return (title, modified: now);
-  }
-
-  (String, String, int) power() {
-    const first = 'first';
-    const second = 'second';
-    const last = 1000;
-
-    return (first, second, last);
-  }
-}
-
 const documentJson = '''
 {
   "metadata": {
     "title": "My Document",
-    "modified": "2023-05-10"
+    "modified": "2023-06-28"
   },
   "blocks": [
     {
@@ -37,9 +17,95 @@ const documentJson = '''
     },
     {
       "type": "checkbox",
-      "checked": false,
+      "checked": true,
       "text": "Learn Dart 3"
     }
   ]
 }
 ''';
+
+class Document {
+  Document() : _json = jsonDecode(documentJson);
+  final Map<String, Object?> _json;
+
+  (String, {DateTime modified}) get metadata {
+    // using pattern for extracting data from json
+    if (_json
+        case {
+          'metadata': {
+            'title': String title,
+            'modified': String localModified,
+          }
+        }) {
+      return (title, modified: DateTime.parse(localModified));
+    } else {
+      throw const FormatException('Unexpected JSON');
+    }
+  }
+
+  (String, String, int) power() {
+    const first = 'first';
+    const second = 'second';
+    const last = 1000;
+
+    return (first, second, last);
+  }
+
+  List<Block> getBlocks() {
+    if (_json case {'blocks': List blockJsons}) {
+      return [for (final blockJson in blockJsons) Block.fromJson(blockJson)];
+    } else {
+      throw const FormatException('Unexpected JSON format');
+    }
+  }
+}
+
+sealed class Block {
+  // final String type;
+  // final String text;
+  //
+  // const Block(this.type, this.text);
+
+  Block();
+
+  factory Block.fromJson(Map<String, dynamic> json) {
+    return switch (json) {
+      {
+        'type': 'h1',
+        'text': String text,
+      } =>
+        HeaderBlock(text),
+      {
+        'type': 'p',
+        'text': String text,
+      } =>
+        ParagraphBlock(text),
+      {
+        'type': 'checkbox',
+        'text': String text,
+        'checked': bool checked,
+      } =>
+        CheckboxBlock(text, checked),
+      _ => throw const FormatException('Unexpected JSON format'),
+    };
+  }
+}
+
+class HeaderBlock extends Block {
+  final String text;
+
+  HeaderBlock(this.text);
+}
+
+class ParagraphBlock extends Block {
+  final String text;
+
+  ParagraphBlock(this.text);
+}
+
+class CheckboxBlock extends Block {
+  final String text;
+  final bool isChecked;
+
+  CheckboxBlock(this.text, this.isChecked);
+}
