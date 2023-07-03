@@ -32,17 +32,23 @@ class _QuizState extends State<Quiz> {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.purple, Colors.amber, Colors.blueAccent],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+      home: Column(
+        children: [
+          Expanded(
+            child: Scaffold(
+              body: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.purple, Colors.amber, Colors.blueAccent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: currentScreen,
+              ),
             ),
           ),
-          child: currentScreen,
-        ),
+        ],
       ),
     );
   }
