@@ -97,17 +97,16 @@ class _SignUpFormState extends State<SignUpForm> {
           TextButton(
             style: ButtonStyle(
               foregroundColor: MaterialStateProperty.resolveWith(
-                  (Set<MaterialState> states) {
-                return states.contains(MaterialState.disabled)
-                    ? null
-                    : Colors.white;
-              }),
+                  (Set<MaterialState> states) =>
+                      states.contains(MaterialState.disabled)
+                          ? null
+                          : Colors.white),
               backgroundColor: MaterialStateProperty.resolveWith(
-                  (Set<MaterialState> states) {
-                return states.contains(MaterialState.disabled)
-                    ? null
-                    : Colors.blue;
-              }),
+                (Set<MaterialState> states) =>
+                    states.contains(MaterialState.disabled)
+                        ? null
+                        : Colors.blue,
+              ),
             ),
             onPressed: _formProgress == 1 ? _showWelcomeScreen : null,
             child: const Text('Sign up'),
@@ -147,7 +146,7 @@ class AnimatedProgressIndicator extends StatefulWidget {
   const AnimatedProgressIndicator({
     Key? key,
     required this.value,
-  }): super(key: key);
+  }) : super(key: key);
 
   @override
   State<AnimatedProgressIndicator> createState() {

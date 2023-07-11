@@ -1,16 +1,18 @@
-import 'package:first_web/quiz_app/question_summary.dart';
+import 'package:first_web/quiz_app/questions_summary/question_summary.dart';
 import 'package:flutter/material.dart';
 import 'package:first_web/quiz_app/data/questions.dart';
 
 class ResultScreen extends StatelessWidget {
+  final List<String> selectedAnswers;
+  final void Function() onRestart;
+
   const ResultScreen({
     super.key,
     required this.selectedAnswers,
+    required this.onRestart,
   });
 
-  final List<String> selectedAnswers;
-
-  List<Map<String, Object>> getSummaryData() {
+  List<Map<String, Object>> get summartData {
     List<Map<String, Object>> summary = [];
 
     for (var i = 0; i < selectedAnswers.length; i++) {
@@ -29,7 +31,7 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, Object>> summary = getSummaryData();
+    final List<Map<String, Object>> summary = summartData;
     final int correctAnswers = summary
         .where((element) => element['correctAnswer'] == element['userAnswer'])
         .length;
@@ -54,9 +56,10 @@ class ResultScreen extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text('retry quiz!'),
+            TextButton.icon(
+              onPressed: onRestart,
+              icon: const Icon(Icons.refresh),
+              label: const Text('retry quiz!'),
             ),
           ],
         ),
