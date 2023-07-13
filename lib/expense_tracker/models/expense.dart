@@ -1,5 +1,5 @@
+import 'package:first_web/expense_tracker/utils/date_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 const uuid = Uuid();
@@ -24,8 +24,6 @@ const categoryIcon = {
   Category.other: Icons.more_horiz,
 };
 
-final _formatter = DateFormat.yMd();
-
 
 class Expense {
   final String id;
@@ -41,6 +39,6 @@ class Expense {
     required this.category,
   }) : id = uuid.v4();
 
-  String get formattedDate => _formatter.format(date);
+  String get formattedDate => DateFormatter.format(date);
 
 }
