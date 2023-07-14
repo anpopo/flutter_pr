@@ -26,7 +26,13 @@ class ExpenseItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text('₩ ${expense.amount.toStringAsFixed(2)}'),
+                Text(
+                  '₩ ${expense.amount.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
