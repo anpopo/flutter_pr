@@ -15,7 +15,7 @@ class NewExpense extends StatefulWidget {
 class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
-  DateTime? _pickedDate;
+  DateTime? _pickedDate = DateTime.now();
   Category _category = Category.food;
 
   void _submitExpenseData() {
