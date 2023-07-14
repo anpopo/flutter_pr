@@ -19,25 +19,20 @@ class ExpenseItem extends StatelessWidget {
           horizontal: 8.0,
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               expense.title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
                   '₩ ${expense.amount.toStringAsFixed(2)}',
                 ),
-                const SizedBox(width: 8),
+                const Spacer(),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Icon(categoryIcon[expense.category]),
                     const SizedBox(width: 8),

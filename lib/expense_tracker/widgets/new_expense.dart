@@ -139,6 +139,7 @@ class _NewExpenseState extends State<NewExpense> {
                     _category = value;
                   });
                 },
+                style: Theme.of(context).dropdownMenuTheme.textStyle,
               ),
               const Spacer(),
               TextButton(
