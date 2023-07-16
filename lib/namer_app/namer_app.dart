@@ -212,25 +212,26 @@ class GeneratorFavorites extends StatelessWidget {
           child: GridView(
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 400, childAspectRatio: 400 / 80),
-            children: [
-              for (var pair in appState.favorites)
-                ListTile(
-                  leading: IconButton(
-                    icon: const Icon(
-                      Icons.delete_outline_outlined,
-                      semanticLabel: 'Delete',
+            children: appState.favorites
+                .map(
+                  (favorite) => ListTile(
+                    leading: IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline_outlined,
+                        semanticLabel: 'Delete',
+                      ),
+                      color: theme.colorScheme.primary,
+                      onPressed: () {
+                        appState.removeFavorite(favorite);
+                      },
                     ),
-                    color: theme.colorScheme.primary,
-                    onPressed: () {
-                      appState.removeFavorite(pair);
-                    },
+                    title: Text(
+                      favorite.asLowerCase,
+                      semanticsLabel: favorite.asPascalCase,
+                    ),
                   ),
-                  title: Text(
-                    pair.asLowerCase,
-                    semanticsLabel: pair.asPascalCase,
-                  ),
-                ),
-            ],
+                )
+                .toList(),
           ),
         ),
       ],

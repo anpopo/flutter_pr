@@ -3,24 +3,36 @@
 ## references
 - [dart 3.0.0 release feature](https://github.com/dart-lang/language/blob/main/accepted/future-releases/0546-patterns/feature-specification.md)
 - [codelab for dart and flutter](https://docs.flutter.dev/codelabs)
-
+- [Udemy awesome flutter lecture](https://www.udemy.com/course/learn-flutter-dart-to-build-ios-android-apps/)
 ## List of Practice
-- **first_web**
-  - call back function
+### **first_web**
+  - material3 design
+  - callback function
+    - such as 'onPressed', 'onChanged'
   - navigator
-  - widget - setState()
+    - controller displayed page
+  - widget
     - stateful widget
+      - setState
+      - dispose
+    - stateless widget
   - anonymous function
-<br/><br/>
-- **namer_app**
+***
+### **namer_app**
   - dependencies
     - pubspec.yaml
   - flutter dev tools
-  - stateful / stateless widget
-  - widgets basics
-  - animation basics
-<br/><br/>
-- **pattern_codelab**
+    - for debugging
+  - widget
+    - stateful widget
+    - stateless widget
+  - changeNotifierProvider
+    - ChangeNotifier
+    - notifyListeners
+***
+### **pattern_codelab**
+  - dart:convert package
+    - jsonDecode
   - dart ^3.0.0 features
   - pattern
     - match
@@ -30,8 +42,8 @@
   - Map Pattern
   - switch expression
   - sealed class
-<br/><br/>
-- **random_dice**
+***
+### **random_dice**
   - stateless / stateful widget
   - const keyword
     - optimize flutter render UI component
@@ -39,5 +51,32 @@
   - column / row widget
     - mainAxis, cross Axis
   - composition rather than inheritance
-
-  
+***
+### **quiz_app**
+  - widget's life cycle
+    - initState
+  - lifting state
+  - separate operator
+  - map, where
+***
+### **expense_tracker**
+  - theme
+    - ColorScheme, ThemeData
+    - dart mode
+  - widget's life cycle
+    - dispose
+  - enum
+  - named constructor
+  - Dismissible widget
+    - ValueKey
+  - ListView
+    - builder
+      - optimize item rendering
+      - when the children widgets are actually visible, builder is called
+  - material library
+    - showModalBottomSheet
+    - showDialog
+    - showDatePicker
+  - snack bar
+  - Navigator
+    - control the displayed page
