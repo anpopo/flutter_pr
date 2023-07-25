@@ -1,16 +1,18 @@
 import 'package:first_web/meal_road/models/meal.dart';
-import 'package:first_web/meal_road/screens/meal_detail.dart';
+import 'package:first_web/meal_road/screens/meal_details.dart';
 import 'package:first_web/meal_road/widgets/meal_item.dart';
 import 'package:flutter/material.dart';
 
 class MealsScreen extends StatelessWidget {
   final String title;
   final List<Meal> meals;
+  final void Function(Meal meal) onToggleFavorite;
 
   const MealsScreen({
     super.key,
     required this.title,
     required this.meals,
+    required this.onToggleFavorite,
   });
 
   void _selectMealDetail(BuildContext context, Meal meal) {
@@ -19,6 +21,7 @@ class MealsScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => MealDetails(
           meal: meal,
+          onToggleFavorite: onToggleFavorite,
         ),
       ),
     );
@@ -51,11 +54,21 @@ class MealsScreen extends StatelessWidget {
             )
           : ListView.builder(
               itemCount: meals.length,
-              itemBuilder: (context, index) => MealItem(
-                meal: meals[index],
-                onMealSelect: (meal) {
-                  _selectMealDetail(context, meal);
-                },
+              itemBuilder: (context, index) => Stack(
+                children: [
+                  MealItem(
+                    meal: meals[index],
+                    onMealSelect: (meal) {
+                      _selectMealDetail(context, meal);
+                    },
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      onToggleFavorite(meals[index]);
+                    },
+                    icon: const Icon(Icons.star_border),
+                  ),
+                ],
               ),
             ),
     );
