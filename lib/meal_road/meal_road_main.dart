@@ -1,5 +1,4 @@
 
-import 'package:first_web/meal_road/screens/categories_screen.dart';
 import 'package:first_web/meal_road/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
