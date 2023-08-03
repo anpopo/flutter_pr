@@ -1,9 +1,11 @@
-import 'package:first_web/meal_road/models/meal.dart';
+import 'package:first_web/meal_road/providers/favorites_provider.dart';
+import 'package:first_web/meal_road/providers/meals_provider.dart';
 import 'package:first_web/meal_road/screens/categories_screen.dart';
 import 'package:first_web/meal_road/screens/filters_screen.dart';
 import 'package:first_web/meal_road/screens/meals_screen.dart';
 import 'package:first_web/meal_road/widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const kInitialFilters = {
   Filter.glutenFree: false,
@@ -12,42 +14,40 @@ const kInitialFilters = {
   Filter.vegan: false,
 };
 
-class TabsScreen extends StatefulWidget {
+class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _TabsScreenState();
+  ConsumerState<TabsScreen> createState() => _TabsScreenState();
 }
 
-class _TabsScreenState extends State<TabsScreen> {
+class _TabsScreenState extends ConsumerState<TabsScreen> {
   var _selectedPageIndex = 0;
-  final List<Meal> _favoriteMeals = [];
-
   Map<Filter, bool> _selectedFilter = kInitialFilters;
 
-  void _showInfoMessage(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
-  }
+  // void _showInfoMessage(String message) {
+  //   ScaffoldMessenger.of(context).clearSnackBars();
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(message),
+  //     ),
+  //   );
+  // }
 
-  void _toggleMealFavoriteStatus(Meal meal) {
-    final isExisting = _favoriteMeals.contains(meal);
-    if (isExisting) {
-      setState(() {
-        _favoriteMeals.remove(meal);
-      });
-      _showInfoMessage('Marked as an not favorite!');
-    } else {
-      setState(() {
-        _favoriteMeals.add(meal);
-      });
-      _showInfoMessage('Marked as an favorite!');
-    }
-  }
+  // void _toggleMealFavoriteStatus(Meal meal) {
+  //   final isExisting = _favoriteMeals.contains(meal);
+  //   if (isExisting) {
+  //     setState(() {
+  //       _favoriteMeals.remove(meal);
+  //     });
+  //     _showInfoMessage('Marked as an not favorite!');
+  //   } else {
+  //     setState(() {
+  //       _favoriteMeals.add(meal);
+  //     });
+  //     _showInfoMessage('Marked as an favorite!');
+  //   }
+  // }
 
   void _selectPage(int index) {
     setState(() {
@@ -81,13 +81,30 @@ class _TabsScreenState extends State<TabsScreen> {
       drawer: MainDrawer(onSelectScreen: _setScreen),
       body: _selectedPageIndex == 0
           ? CategoryScreen(
-              onToggleFavorite: _toggleMealFavoriteStatus,
-              filters: _selectedFilter,
+              availableMeals: ref.watch(mealsProvider).where((meal) {
+                if (_selectedFilter[Filter.glutenFree]! && !meal.isGlutenFree) {
+                  return false;
+                }
+
+                if (_selectedFilter[Filter.lactoseFree]! &&
+                    !meal.isLactoseFree) {
+                  return false;
+                }
+
+                if (_selectedFilter[Filter.vegetarian]! && !meal.isVegetarian) {
+                  return false;
+                }
+
+                if (_selectedFilter[Filter.vegan]! && !meal.isVegan) {
+                  return false;
+                }
+
+                return true;
+              }).toList(),
             )
           : MealsScreen(
               title: "Favorites",
-              meals: _favoriteMeals,
-              onToggleFavorite: _toggleMealFavoriteStatus,
+              meals: ref.watch(favoriteMealsProvider),
             ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedPageIndex,

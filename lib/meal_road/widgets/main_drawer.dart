@@ -32,7 +32,7 @@ class MainDrawer extends StatelessWidget {
               Icons.restaurant,
               size: 26,
             ),
-            title: Text('Meals!'),
+            title: const Text('Meals!'),
             onTap: () {
               onSelectScreen('meals');
             },

@@ -1,6 +1,6 @@
-
 import 'package:first_web/meal_road/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final theme = ThemeData(
@@ -12,8 +12,12 @@ final theme = ThemeData(
   textTheme: GoogleFonts.alkatraTextTheme(),
 );
 
-void main () {
-  runApp(const MealRoadApp());
+void main() {
+  runApp(
+    const ProviderScope(
+      child: MealRoadApp(),
+    ),
+  );
 }
 
 class MealRoadApp extends StatelessWidget {
@@ -26,5 +30,4 @@ class MealRoadApp extends StatelessWidget {
       home: const TabsScreen(),
     );
   }
-
 }
