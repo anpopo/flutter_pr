@@ -1,6 +1,5 @@
 import 'package:first_web/meal_road/providers/favorites_provider.dart';
 import 'package:first_web/meal_road/providers/filters_provider.dart';
-import 'package:first_web/meal_road/providers/meals_provider.dart';
 import 'package:first_web/meal_road/screens/categories_screen.dart';
 import 'package:first_web/meal_road/screens/filters_screen.dart';
 import 'package:first_web/meal_road/screens/meals_screen.dart';
@@ -63,7 +62,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filtersState = ref.watch(filtersProvider);
+    final filteredMeals = ref.watch(filteredMealsProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(_selectedPageIndex == 0 ? 'Categories' : 'Your Favorites'),
@@ -71,25 +70,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       drawer: MainDrawer(onSelectScreen: _setScreen),
       body: _selectedPageIndex == 0
           ? CategoryScreen(
-              availableMeals: ref.watch(mealsProvider).where((meal) {
-                if (filtersState[Filter.glutenFree]! && !meal.isGlutenFree) {
-                  return false;
-                }
-
-                if (filtersState[Filter.lactoseFree]! && !meal.isLactoseFree) {
-                  return false;
-                }
-
-                if (filtersState[Filter.vegetarian]! && !meal.isVegetarian) {
-                  return false;
-                }
-
-                if (filtersState[Filter.vegan]! && !meal.isVegan) {
-                  return false;
-                }
-
-                return true;
-              }).toList(),
+              availableMeals: filteredMeals,
             )
           : MealsScreen(
               title: "Favorites",

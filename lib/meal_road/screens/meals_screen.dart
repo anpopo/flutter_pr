@@ -1,5 +1,4 @@
 import 'package:first_web/meal_road/models/meal.dart';
-import 'package:first_web/meal_road/providers/favorites_provider.dart';
 import 'package:first_web/meal_road/screens/meal_details.dart';
 import 'package:first_web/meal_road/widgets/meal_item.dart';
 import 'package:flutter/material.dart';
@@ -53,32 +52,11 @@ class MealsScreen extends ConsumerWidget {
             )
           : ListView.builder(
               itemCount: meals.length,
-              itemBuilder: (context, index) => Stack(
-                children: [
-                  MealItem(
-                    meal: meals[index],
-                    onMealSelect: (meal) {
-                      _selectMealDetail(context, meal);
-                    },
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      final wasAdded = ref
-                          .read(favoriteMealsProvider.notifier)
-                          .toggleMealFavoriteStatus(meals[index]);
-
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(wasAdded
-                              ? 'Marked as an favorite!'
-                              : 'Marked as an not favorite!'),
-                        ),
-                      );
-                    },
-                    icon: Icon(ref.read(favoriteMealsProvider.notifier).isContains(meals[index]) ? Icons.star : Icons.star_border),
-                  ),
-                ],
+              itemBuilder: (context, index) => MealItem(
+                meal: meals[index],
+                onMealSelect: (meal) {
+                  _selectMealDetail(context, meal);
+                },
               ),
             ),
     );
