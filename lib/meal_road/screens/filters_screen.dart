@@ -1,39 +1,16 @@
 // import 'package:first_web/meal_road/screens/tabs_screen.dart';
-import 'package:first_web/meal_road/widgets/main_drawer.dart';
+import 'package:first_web/meal_road/providers/filters_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum Filter {
-  glutenFree,
-  lactoseFree,
-  vegetarian,
-  vegan,
-}
-
-class FiltersScreen extends StatefulWidget {
-  final Map<Filter, bool> selectedFilter;
-  const FiltersScreen({super.key, required this.selectedFilter});
+class FiltersScreen extends ConsumerWidget {
+  const FiltersScreen({
+    super.key,
+  });
 
   @override
-  State<StatefulWidget> createState() => _FiltersScreenState();
-}
-
-class _FiltersScreenState extends State<FiltersScreen> {
-  bool _isGlutenFree = false;
-  bool _isLactoseFree = false;
-  bool _isVegetarian = false;
-  bool _isVegan = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _isGlutenFree = widget.selectedFilter[Filter.glutenFree]!;
-    _isLactoseFree = widget.selectedFilter[Filter.lactoseFree]!;
-    _isVegetarian = widget.selectedFilter[Filter.vegetarian]!;
-    _isVegan = widget.selectedFilter[Filter.vegan]!;
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filtersState = ref.watch(filtersProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Filters'),
@@ -48,66 +25,67 @@ class _FiltersScreenState extends State<FiltersScreen> {
       //     }
       //   },
       // ),
-      body: WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pop({
-            Filter.glutenFree: _isGlutenFree,
-            Filter.lactoseFree: _isLactoseFree,
-            Filter.vegetarian: _isVegetarian,
-            Filter.vegan: _isVegan,
-          });
-
-          return false;
-        },
-        child: Column(
-          children: [
-            SwitchListTile(
-              title: const Text('Gluten-free'),
-              value: _isGlutenFree,
-              subtitle: const Text('Only include gluten-free meals.'),
-              contentPadding: const EdgeInsets.only(left: 24, right: 20),
-              onChanged: (selected) {
-                setState(() {
-                  _isGlutenFree = selected;
-                });
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Lactose-free'),
-              value: _isLactoseFree,
-              subtitle: const Text('Only include lactose-free meals.'),
-              contentPadding: const EdgeInsets.only(left: 24, right: 20),
-              onChanged: (selected) {
-                setState(() {
-                  _isLactoseFree = selected;
-                });
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Vegetarian'),
-              value: _isVegetarian,
-              subtitle: const Text('Only include vegetarian meals.'),
-              contentPadding: const EdgeInsets.only(left: 24, right: 20),
-              onChanged: (selected) {
-                setState(() {
-                  _isVegetarian = selected;
-                });
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Vegan'),
-              value: _isVegan,
-              subtitle: const Text('Only include vegan meals.'),
-              contentPadding: const EdgeInsets.only(left: 24, right: 20),
-              onChanged: (selected) {
-                setState(() {
-                  _isVegan = selected;
-                });
-              },
-            ),
-          ],
-        ),
+      body:
+          // WillPopScope(
+          //   onWillPop: () async {
+          //     ref.read(filtersProvider.notifier).setFilters({
+          //       Filter.glutenFree: _isGlutenFree,
+          //       Filter.lactoseFree: _isLactoseFree,
+          //       Filter.vegetarian: _isVegetarian,
+          //       Filter.vegan: _isVegan,
+          //     });
+          //     return true; // true > pop
+          //   },
+          //   child:
+          Column(
+        children: [
+          SwitchListTile(
+            title: const Text('Gluten-free'),
+            value: filtersState[Filter.glutenFree]!,
+            subtitle: const Text('Only include gluten-free meals.'),
+            contentPadding: const EdgeInsets.only(left: 24, right: 20),
+            onChanged: (selected) {
+              ref
+                  .read(filtersProvider.notifier)
+                  .setFilter(Filter.glutenFree, selected);
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Lactose-free'),
+            value: filtersState[Filter.lactoseFree]!,
+            subtitle: const Text('Only include lactose-free meals.'),
+            contentPadding: const EdgeInsets.only(left: 24, right: 20),
+            onChanged: (selected) {
+              ref
+                  .read(filtersProvider.notifier)
+                  .setFilter(Filter.lactoseFree, selected);
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Vegetarian'),
+            value: filtersState[Filter.vegetarian]!,
+            subtitle: const Text('Only include vegetarian meals.'),
+            contentPadding: const EdgeInsets.only(left: 24, right: 20),
+            onChanged: (selected) {
+              ref
+                  .read(filtersProvider.notifier)
+                  .setFilter(Filter.vegetarian, selected);
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Vegan'),
+            value: filtersState[Filter.vegan]!,
+            subtitle: const Text('Only include vegan meals.'),
+            contentPadding: const EdgeInsets.only(left: 24, right: 20),
+            onChanged: (selected) {
+              ref
+                  .read(filtersProvider.notifier)
+                  .setFilter(Filter.vegan, selected);
+            },
+          ),
+        ],
       ),
+      // ),
     );
   }
 }

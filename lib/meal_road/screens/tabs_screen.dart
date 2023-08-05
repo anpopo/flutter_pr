@@ -1,4 +1,5 @@
 import 'package:first_web/meal_road/providers/favorites_provider.dart';
+import 'package:first_web/meal_road/providers/filters_provider.dart';
 import 'package:first_web/meal_road/providers/meals_provider.dart';
 import 'package:first_web/meal_road/screens/categories_screen.dart';
 import 'package:first_web/meal_road/screens/filters_screen.dart';
@@ -6,13 +7,6 @@ import 'package:first_web/meal_road/screens/meals_screen.dart';
 import 'package:first_web/meal_road/widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-const kInitialFilters = {
-  Filter.glutenFree: false,
-  Filter.lactoseFree: false,
-  Filter.vegetarian: false,
-  Filter.vegan: false,
-};
 
 class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
@@ -23,7 +17,6 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   var _selectedPageIndex = 0;
-  Map<Filter, bool> _selectedFilter = kInitialFilters;
 
   // void _showInfoMessage(String message) {
   //   ScaffoldMessenger.of(context).clearSnackBars();
@@ -58,22 +51,19 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   void _setScreen(String identifier) async {
     Navigator.of(context).pop();
     if (identifier == 'filters') {
-      final result = await Navigator.of(context).push<Map<Filter, bool>>(
+      await Navigator.of(context).push<Map<Filter, bool>>(
         MaterialPageRoute(
           builder: (ctx) {
-            return FiltersScreen(selectedFilter: _selectedFilter);
+            return const FiltersScreen();
           },
         ),
       );
-
-      setState(() {
-        _selectedFilter = result ?? kInitialFilters;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final filtersState = ref.watch(filtersProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(_selectedPageIndex == 0 ? 'Categories' : 'Your Favorites'),
@@ -82,20 +72,19 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       body: _selectedPageIndex == 0
           ? CategoryScreen(
               availableMeals: ref.watch(mealsProvider).where((meal) {
-                if (_selectedFilter[Filter.glutenFree]! && !meal.isGlutenFree) {
+                if (filtersState[Filter.glutenFree]! && !meal.isGlutenFree) {
                   return false;
                 }
 
-                if (_selectedFilter[Filter.lactoseFree]! &&
-                    !meal.isLactoseFree) {
+                if (filtersState[Filter.lactoseFree]! && !meal.isLactoseFree) {
                   return false;
                 }
 
-                if (_selectedFilter[Filter.vegetarian]! && !meal.isVegetarian) {
+                if (filtersState[Filter.vegetarian]! && !meal.isVegetarian) {
                   return false;
                 }
 
-                if (_selectedFilter[Filter.vegan]! && !meal.isVegan) {
+                if (filtersState[Filter.vegan]! && !meal.isVegan) {
                   return false;
                 }
 
