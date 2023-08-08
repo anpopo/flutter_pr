@@ -1,7 +1,12 @@
-import 'package:first_web/shopping_list/data/dummy_items.dart';
+import 'dart:convert';
+
+import 'package:first_web/shopping_list/data/categories.dart';
+import 'package:first_web/shopping_list/models/category.dart';
 import 'package:first_web/shopping_list/models/grocery_item.dart';
 import 'package:first_web/shopping_list/screens/new_item.dart';
 import 'package:flutter/material.dart';
+
+import 'package:http/http.dart' as http;
 
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
@@ -11,21 +16,64 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-  final List<GroceryItem> _groceryItems = [];
+  List<GroceryItem> _groceryItems = [];
+
+  void _loadItems() async {
+    final url = Uri.https(
+        '',
+        'items.json');
+
+    final response = await http.get(url);
+
+    if (response.body.isNotEmpty && response.body != 'null') {
+      final Map<String, dynamic> itemList = jsonDecode(response.body);
+      final List<GroceryItem> temporaryGroceryItem = [];
+
+      for (final item in itemList.entries) {
+        final (name, quantity, category) = switch (item.value) {
+          {
+            'category': String category,
+            'name': String name,
+            'quantity': int quantity
+          } =>
+            (
+              name,
+              quantity,
+              categories.values.firstWhere((cat) => cat.title == category)
+            ),
+          _ => throw const FormatException('Invalid Format!')
+        };
+
+        temporaryGroceryItem.add(
+          GroceryItem(
+            id: item.key,
+            category: category,
+            name: name,
+            quantity: quantity,
+          ),
+        );
+      }
+
+      setState(() {
+        _groceryItems = temporaryGroceryItem;
+      });
+    }
+  }
 
   void _addItem() async {
     ScaffoldMessenger.of(context).clearSnackBars();
-    final newItem = await Navigator.of(context).push<GroceryItem>(
+    await Navigator.of(context).push<GroceryItem>(
       MaterialPageRoute(
         builder: (ctx) => const NewItem(),
       ),
     );
+    _loadItems();
+  }
 
-    if (newItem != null) {
-      setState(() {
-        _groceryItems.add(newItem);
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    _loadItems();
   }
 
   @override
@@ -97,7 +145,6 @@ class _GroceryListState extends State<GroceryList> {
                             },
                           )),
                     );
-
                   },
                   direction: DismissDirection.startToEnd,
                   background: Container(
