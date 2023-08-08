@@ -19,23 +19,48 @@ class _NewItemState extends State<NewItem> {
   var _enteredName = '';
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
+  var _isSending = false;
 
   void _saveItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final url =
-          Uri.https('', 'items.json');
-      await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'name': _enteredName,
-          'quantity': _enteredQuantity,
-          'category': _selectedCategory.title,
-        })
-      );
+      setState(() {
+        _isSending = true;
+      });
+      try {
+        final url = Uri.https('', 'items.json');
 
-      if (mounted) Navigator.of(context).pop();
+        final response = await http.post(url,
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'name': _enteredName,
+              'quantity': _enteredQuantity,
+              'category': _selectedCategory.title,
+            }));
+
+        if (mounted && response.statusCode == 200) {
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          Navigator.of(context).pop(
+            GroceryItem(
+                id: responseData['name'],
+                name: _enteredName,
+                quantity: _enteredQuantity,
+                category: _selectedCategory),
+          );
+        }
+      } catch (error) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 1),
+            content: Text('Error occurred...Try again later.'),
+          ),
+        );
+      } finally {
+        setState(() {
+          _isSending = false;
+        });
+      }
     }
   }
 
@@ -128,16 +153,25 @@ class _NewItemState extends State<NewItem> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {
-                      _formKey.currentState!.reset();
-                    },
+                    onPressed: _isSending
+                        ? null
+                        : () {
+                            _formKey.currentState!.reset();
+                          },
                     child: const Text('Reset'),
                   ),
                   ElevatedButton(
-                      onPressed: _saveItem,
-                      child: const Text(
-                        'Add Item',
-                      ))
+                    onPressed: _isSending ? null : _saveItem,
+                    child: _isSending
+                        ? const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(),
+                          )
+                        : const Text(
+                            'Add Item',
+                          ),
+                  ),
                 ],
               )
             ],
