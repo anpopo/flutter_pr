@@ -2,10 +2,12 @@ import 'package:first_web/shopping_list/screens/grocery_list.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(ShoppingListApp());
+  runApp(const ShoppingListApp());
 }
 
 class ShoppingListApp extends StatelessWidget {
+  const ShoppingListApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {
