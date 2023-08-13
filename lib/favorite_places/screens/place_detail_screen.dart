@@ -1,4 +1,6 @@
 import 'package:first_web/favorite_places/models/place.dart';
+import 'package:first_web/favorite_places/screens/map_screen.dart';
+import 'package:first_web/favorite_places/screens/test_map_screen.dart';
 import 'package:flutter/material.dart';
 
 class PlaceDetailScreen extends StatelessWidget {
@@ -30,9 +32,20 @@ class PlaceDetailScreen extends StatelessWidget {
             right: 0,
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 70,
-                  backgroundImage: NetworkImage(tempLocationImage),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => TestMapScreen(
+                          location: place.location,
+                          isSelecting: false,
+                        ),
+                      ),);
+                  },
+                  child: CircleAvatar(
+                    radius: 70,
+                    backgroundImage: NetworkImage(tempLocationImage),
+                  ),
                 ),
                 Container(
                   alignment: Alignment.center,
@@ -45,8 +58,8 @@ class PlaceDetailScreen extends StatelessWidget {
                     place.location.address,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
-                    ),
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
                   ),
                 )
               ],
