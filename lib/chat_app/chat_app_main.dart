@@ -1,7 +1,20 @@
+import 'dart:developer';
+
 import 'package:first_web/chat_app/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 
+Future<void> firebaseInitialize() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  log('firebase initialized.');
+}
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  firebaseInitialize();
   runApp(const FlutterChatApp());
 }
 
