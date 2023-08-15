@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -9,8 +12,8 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  var _email;
-  var _password;
+  var _email = '';
+  var _password = '';
   var _isLogin = true;
   var _isSaving = false;
 
@@ -30,22 +33,38 @@ class _AuthScreenState extends State<AuthScreen> {
     return null;
   }
 
-  void _submit() {
+  void _submit() async {
     setState(() {
       _isSaving = true;
     });
     final valid = _formKey.currentState?.validate() ?? false;
 
-    if (valid) {
-      _formKey.currentState?.save();
+    if (valid == false) {
+      setState(() {
+        _isSaving = false;
+      });
+      return;
+    }
+    _formKey.currentState?.save();
+
+    try {
+      if (_isLogin == true) {
+        await _firebase.signInWithEmailAndPassword(
+            email: _email, password: _password);
+      } else {
+        await _firebase.createUserWithEmailAndPassword(
+            email: _email, password: _password);
+      }
+    } on FirebaseAuthException catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message ?? 'Authentication failed.')),
+      );
     }
 
     setState(() {
       _isSaving = false;
     });
-
-    print(_email);
-    print(_password);
   }
 
   @override
@@ -104,9 +123,16 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                           onPressed: _isSaving ? null : _submit,
                           child: _isSaving
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
+                              ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+
+                                    ),
+                                  ),
+                              )
                               : Text(
                                   _isLogin ? 'Login' : 'Sign Up',
                                   style: TextStyle(
