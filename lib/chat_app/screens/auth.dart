@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:first_web/chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 
 final _firebase = FirebaseAuth.instance;
@@ -14,6 +18,8 @@ class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
   var _email = '';
   var _password = '';
+  File? /**/ _selectedImage;
+
   var _isLogin = true;
   var _isSaving = false;
 
@@ -33,10 +39,26 @@ class _AuthScreenState extends State<AuthScreen> {
     return null;
   }
 
+  bool _selectedImageValidate() => _selectedImage != null;
+
   void _submit() async {
     setState(() {
       _isSaving = true;
     });
+
+    if (_isLogin == false && _selectedImageValidate() == false) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Image should selected!'),
+        ),
+      );
+      setState(() {
+        _isSaving = false;
+      });
+      return;
+    }
+
     final valid = _formKey.currentState?.validate() ?? false;
 
     if (valid == false) {
@@ -52,8 +74,16 @@ class _AuthScreenState extends State<AuthScreen> {
         await _firebase.signInWithEmailAndPassword(
             email: _email, password: _password);
       } else {
-        await _firebase.createUserWithEmailAndPassword(
+        final userCredential = await _firebase.createUserWithEmailAndPassword(
             email: _email, password: _password);
+
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('user_images')
+            .child('${userCredential.user!.uid}.jpg');
+
+        await storageRef.putFile(_selectedImage!);
+        final imageUrl = await storageRef.getDownloadURL();
       }
     } on FirebaseAuthException catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();
@@ -95,6 +125,12 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (_isLogin == false)
+                          UserImagePicker(
+                            onPickImage: (File? file) {
+                              _selectedImage = file;
+                            },
+                          ),
                         TextFormField(
                           decoration: const InputDecoration(labelText: 'Email'),
                           autocorrect: false,
@@ -124,15 +160,16 @@ class _AuthScreenState extends State<AuthScreen> {
                           onPressed: _isSaving ? null : _submit,
                           child: _isSaving
                               ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: Center(
+                                  height: 20,
+                                  width: 20,
+                                  child: Center(
                                     child: CircularProgressIndicator(
-                                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .primaryContainer,
                                     ),
                                   ),
-                              )
+                                )
                               : Text(
                                   _isLogin ? 'Login' : 'Sign Up',
                                   style: TextStyle(
@@ -146,6 +183,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           onPressed: () {
                             setState(() {
                               _isLogin = !_isLogin;
+                              _formKey.currentState?.reset();
                             });
                           },
                           child: Text(_isLogin
