@@ -87,3 +87,15 @@
     - OrientationBuilder
     - Size Constraints
     - device orientation
+
+***
+### **testing app**
+**reference**
+<br>
+[testing](https://docs.flutter.dev/testing)
+<br>
+[testing_codelabs](https://codelabs.developers.google.com/codelabs/flutter-app-testing?hl=en#0)
+* unit test
+* widget test
+* integration test
+* performance test
