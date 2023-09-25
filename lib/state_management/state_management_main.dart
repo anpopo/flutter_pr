@@ -4,23 +4,17 @@ void main() {
   runApp(const StateManagementApp());
 }
 
-final children = [
-  const Scaffold(
-    body: Center(
-      child: Text('Profile'),
-    ),
-  ),
-  const Scaffold(
-    body: Center(
-      child: Text('Calendar'),
-    ),
-  ),
-  const Scaffold(
-    body: Center(
-      child: Text('Settings'),
-    ),
-  ),
-];
+// const children = [
+//   BottomNavigatorScreen(
+//     text: 'Profile',
+//   ),
+//   BottomNavigatorScreen(
+//     text: 'Calendar',
+//   ),
+//   BottomNavigatorScreen(
+//     text: 'Settings',
+//   ),
+// ];
 
 class StateManagementApp extends StatelessWidget {
   const StateManagementApp({super.key});
@@ -42,14 +36,62 @@ class BottomNavigator extends StatefulWidget {
 
 class _BottomNavigatorState extends State<BottomNavigator> {
   int _index = 0;
+  bool _isLogin = false;
+  String? _name;
+
+  void _onLoginPress() {
+    setState(() {
+      _isLogin = true;
+      _name = 'dev_hippo_an';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: children[_index],
+      appBar: AppBar(
+        title:
+            _isLogin ? Text('Hello! $_name') : const Text('State Management'),
+        actions: [
+          TextButton.icon(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            onPressed: () {
+              setState(() {
+                _isLogin = !_isLogin;
+                _isLogin ? _name = 'dev_hippo_an' : _name = null;
+              });
+            },
+            icon:
+                _isLogin ? const Icon(Icons.logout) : const Icon(Icons.logout),
+            label: _isLogin ? const Text('Logout') : const Text('Login'),
+          ),
+        ],
+      ),
+      body: <Widget>[
+        BottomNavigatorScreen(
+          text: 'Profile',
+          isLogin: _isLogin,
+          name: _name,
+          onLoginPress: _onLoginPress,
+        ),
+        BottomNavigatorScreen(
+          text: 'Calendar',
+          isLogin: _isLogin,
+          name: _name,
+          onLoginPress: _onLoginPress,
+        ),
+        BottomNavigatorScreen(
+          text: 'Settings',
+          isLogin: _isLogin,
+          name: _name,
+          onLoginPress: _onLoginPress,
+        ),
+      ][_index],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.amber[700],
         onTap: (selectedIndex) {
           setState(() {
             _index = selectedIndex;
@@ -74,13 +116,63 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   }
 }
 
+class BottomNavigatorScreen extends StatelessWidget {
+  const BottomNavigatorScreen({
+    super.key,
+    required this.text,
+    required this.isLogin,
+    required this.name,
+    required this.onLoginPress,
+  });
+
+  final String text;
+  final bool isLogin;
+  final String? name;
+  final void Function() onLoginPress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: isLogin
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Hello!!! $name'),
+                  const SizedBox(height: 8),
+                  Text(
+                    text,
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Please Login first!',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: onLoginPress,
+                    child: const Text('login'),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
 class TabNavigator extends StatelessWidget {
   const TabNavigator({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: children.length,
+      length: 3,
       initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
@@ -93,7 +185,7 @@ class TabNavigator extends StatelessWidget {
           ),
         ),
         body: TabBarView(
-          children: children,
+          children: [Scaffold(), Scaffold(), Scaffold()],
         ),
       ),
     );
@@ -117,10 +209,16 @@ class _PageViewNavigatorState extends State<PageViewNavigator> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PageView(
       controller: _pageController,
-      children: children,
+      children: [Scaffold(), Scaffold(), Scaffold()],
     );
   }
 }
