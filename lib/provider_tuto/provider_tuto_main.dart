@@ -13,10 +13,10 @@ class ProviderTutoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     print('ProviderTutoApp build..');
     return MaterialApp(
-      home: ChangeNotifierProvider(
+      home: ChangeNotifierProvider<CountProvider>(
         create: (context) => CountProvider(),
-        child: MaterialApp(
-          home: const CountScreen(),
+        child: const MaterialApp(
+          home: CountScreen(),
         ),
       ),
     );
@@ -48,7 +48,7 @@ class CountScreen extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  Provider.of<CountProvider>(context, listen: false).countDown();
+                  provider.countDown();
                 },
                 icon: const Icon(Icons.exposure_minus_1),
               ),
