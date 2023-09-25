@@ -1,4 +1,6 @@
+import 'package:first_web/state_management/login_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const StateManagementApp());
@@ -21,8 +23,134 @@ class StateManagementApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: BottomNavigator(),
+    return ChangeNotifierProvider(
+      create: (BuildContext context) {
+        return LoginProvider();
+      },
+      child: const MaterialApp(
+        home: ProviderBottomNavigator(),
+      ),
+    );
+  }
+}
+
+class ProviderBottomNavigator extends StatefulWidget {
+  const ProviderBottomNavigator({super.key});
+
+  @override
+  State<ProviderBottomNavigator> createState() =>
+      _ProviderBottomNavigatorState();
+}
+
+class _ProviderBottomNavigatorState extends State<ProviderBottomNavigator> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final loginProvider = Provider.of<LoginProvider>(context);
+    final isLogin = loginProvider.isLogin;
+    final name = loginProvider.name;
+    return Scaffold(
+      appBar: AppBar(
+        title: isLogin ? Text('Hello! $name') : const Text('State Management'),
+        actions: [
+          TextButton.icon(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            onPressed: () {
+              loginProvider.onPress();
+            },
+            icon: isLogin ? const Icon(Icons.logout) : const Icon(Icons.logout),
+            label: isLogin ? const Text('Logout') : const Text('Login'),
+          ),
+        ],
+      ),
+      body: const [
+        ProviderBottomNavigatorScreen(
+          text: 'Profile',
+        ),
+        ProviderBottomNavigatorScreen(
+          text: 'Calendar',
+        ),
+        ProviderBottomNavigatorScreen(
+          text: 'Settings',
+        ),
+      ][_index],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _index,
+        selectedItemColor: Colors.amber[700],
+        onTap: (selectedIndex) {
+          setState(() {
+            _index = selectedIndex;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_rounded),
+            label: 'Calendar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProviderBottomNavigatorScreen extends StatelessWidget {
+  const ProviderBottomNavigatorScreen({
+    super.key,
+    required this.text,
+  });
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Consumer<LoginProvider>(
+        builder: (BuildContext context, LoginProvider provider, Widget? child) {
+          return Center(
+            child: provider.isLogin
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Hello!!! ${provider.name}'),
+                      const SizedBox(height: 8),
+                      Text(
+                        text,
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Please Login first!',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () {
+                          provider.onPress();
+                        },
+                        child: const Text('login'),
+                      ),
+                    ],
+                  ),
+          );
+        },
+      ),
     );
   }
 }
@@ -184,7 +312,7 @@ class TabNavigator extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [Scaffold(), Scaffold(), Scaffold()],
         ),
       ),
@@ -218,7 +346,7 @@ class _PageViewNavigatorState extends State<PageViewNavigator> {
   Widget build(BuildContext context) {
     return PageView(
       controller: _pageController,
-      children: [Scaffold(), Scaffold(), Scaffold()],
+      children: [const Scaffold(), const Scaffold(), const Scaffold()],
     );
   }
 }
